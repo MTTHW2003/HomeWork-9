@@ -1,0 +1,117 @@
+
+import math
+import string
+
+
+def createGrid(message, rows, columns):
+    grid = []
+    message = message.upper().replace(" ", "")
+
+    # Add random-looking padding characters
+    alphabet = string.ascii_uppercase
+    padding = "X"
+
+    while len(message) < rows * columns:
+        message = message + padding
+
+    index = 0
+
+    for row in range(rows):
+        newRow = []
+
+        for column in range(columns):
+            newRow.append(message[index])
+            index = index + 1
+
+        grid.append(newRow)
+
+    return grid
+
+
+def getColumnOrder(keyword):
+    keyword = keyword.upper()
+
+    # Sort column positions by their keyword letters.
+    # Original position breaks ties between repeated letters.
+    order = sorted(range(len(keyword)),
+                   key=lambda i: (keyword[i], i))
+
+    return order
+
+
+def createPath(rows, columns):
+    path = []
+
+    # Follow a zigzag path through the grid.
+    for row in range(rows):
+        if row % 2 == 0:
+            for column in range(columns):
+                path.append((row, column))
+        else:
+            for column in range(columns - 1, -1, -1):
+                path.append((row, column))
+
+    return path
+
+
+def encode(message, keyword, rows, columns):
+    grid = createGrid(message, rows, columns)
+    columnOrder = getColumnOrder(keyword)
+    path = createPath(rows, columns)
+
+    ciphertext = ""
+
+    # Read the grid using the keyword column order.
+    for column in columnOrder:
+        for row in range(rows):
+            ciphertext = ciphertext + grid[row][column]
+
+    # Rearrange the ciphertext using the agreed-upon path.
+    pathCipher = ""
+
+    for row, column in path:
+        pathCipher = pathCipher + grid[row][column]
+
+    return pathCipher
+
+
+def decode(ciphertext, keyword, rows, columns):
+    columnOrder = getColumnOrder(keyword)
+    path = createPath(rows, columns)
+
+    grid = [["" for column in range(columns)]
+            for row in range(rows)]
+
+    index = 0
+
+    # Put ciphertext characters back into the grid
+    # following the agreed-upon path.
+    for row, column in path:
+        grid[row][column] = ciphertext[index]
+        index = index + 1
+
+    # Read the grid using the reverse column process.
+    decrypted = ""
+
+    for column in columnOrder:
+        for row in range(rows):
+            decrypted = decrypted + grid[row][column]
+
+    return decrypted
+
+
+def main():
+    message = input("Enter a message: ")
+    keyword = input("Enter a keyword: ")
+
+    rows = int(input("Enter number of rows: "))
+    columns = len(keyword)
+
+    encrypted = encode(message, keyword, rows, columns)
+    decrypted = decode(encrypted, keyword, rows, columns)
+
+    print("Encrypted message:", encrypted)
+    print("Decrypted message:", decrypted)
+
+
+main()
