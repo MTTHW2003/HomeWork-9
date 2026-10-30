@@ -1,0 +1,60 @@
+
+from graphics import *
+import time
+
+def main():
+    height1 = float(input("Enter the initial height of ball 1: "))
+    height2 = float(input("Enter the initial height of ball 2: "))
+    height3 = float(input("Enter the initial height of ball 3: "))
+
+    win = GraphWin("Three Bouncing Balls", 500, 400)
+
+    win.setCoords(0, 0, 10, 10)
+
+    ball1 = Circle(Point(2, 8), 0.3)
+    ball2 = Circle(Point(5, 8), 0.3)
+    ball3 = Circle(Point(8, 8), 0.3)
+
+    ball1.setFill("red")
+    ball2.setFill("blue")
+    ball3.setFill("green")
+
+    ball1.draw(win)
+    ball2.draw(win)
+    ball3.draw(win)
+
+    balls = [
+        [height1, 0, ball1],
+        [height2, 0, ball2],
+        [height3, 0, ball3]
+    ]
+
+    while (balls[0][0] >= 0.001 or
+           balls[1][0] >= 0.001 or
+           balls[2][0] >= 0.001):
+
+        for ball in balls:
+            if ball[0] >= 0.001:
+                oldHeight = ball[0]
+                ball[0] = ball[0] * 0.60
+                ball[1] = ball[1] + 1
+
+                distance = oldHeight - ball[0]
+
+                for i in range(20):
+                    ball[2].move(0, -distance / 20)
+                    time.sleep(0.01)
+
+                for i in range(20):
+                    ball[2].move(0, distance / 20)
+                    time.sleep(0.01)
+
+    print("Ball 1 bounced", balls[0][1], "times.")
+    print("Ball 2 bounced", balls[1][1], "times.")
+    print("Ball 3 bounced", balls[2][1], "times.")
+
+    win.getMouse()
+    win.close()
+
+
+main()
